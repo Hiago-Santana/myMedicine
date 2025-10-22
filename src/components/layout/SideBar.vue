@@ -1,26 +1,29 @@
 <template>
-    <div class="flex h-screen relative">
+    <div class="flex  h-screen relative">
 
         <!-- Botão para abrir a sidebar (mobile) -->
-        <div class="flex items-center gap-2 md:hidden p-3 fixed top-4 left-4 rounded-lg z-50">
-            <button class="flex items-center justify-center text-white bg-first rounded-lg h-10 w-10" @click="toggleSidebar">
-            <span class="material-symbols-outlined">
-                menu
-            </span>
-            </button>
-            <div class="flex">
+        <div
+            class="flex justify-between w-full items-center gap-2 md:hidden p-3 fixed top-4 rounded-lg z-50 shadown-lg">
+
+            <div class="flex">                
                 <div class="my-4">
                     <div class="flex items-center gap-2">
                         <span class="material-symbols-outlined p-2 bg-first text-white rounded-full"
                             style="font-size:40px ;">
                             pill
                         </span>
-                        <h1>Meus Medicamentos</h1>
+                        <h1 class="text-xl">Meus Medicamentos</h1>
                     </div>
                 </div>
-
             </div>
 
+            <button class="flex items-center justify-center text-white bg-first rounded-lg h-10 w-10"
+                @click="toggleSidebar">
+                <span class="material-symbols-outlined">
+                    menu
+                </span>
+            </button>
+            
         </div>
 
 
@@ -33,20 +36,24 @@
         <!-- Sidebar -->
         <transition name="slide">
             <aside v-show="isOpen || isDesktop"
-                class="fixed md:static top-0 left-0 h-full w-64 bg-six-500 text-white flex flex-col shadow-lg z-50 md:z-auto">
+                class="fixed md:static top-0  h-full w-64 bg-gray-200 text-white flex flex-col shadow-lg z-50 md:z-auto">
                 <!-- Cabeçalho -->
-                <div class="flex items-center justify-between p-4 border-b border-gray-700">
-                    <h2 class="text-lg font-bold">AgendaCheck</h2>
+                <div class="flex items-center justify-between p-4 border-b bg-first border-gray-700">
+                    <h2 class="text-lg font-bold">LembreMed</h2>
                     <button class="md:hidden" @click="closeSidebar">
-                        <span class="material-icons text-2xl">close</span>
+                        <span class="material-symbols-outlined">
+                            close
+                        </span>
                     </button>
                 </div>
 
                 <!-- Itens do menu -->
                 <nav class="flex-1 overflow-y-auto p-4 space-y-2">
                     <a v-for="item in menuItems" :key="item.label" :href="item.href"
-                        class="flex items-center gap-3 p-2 rounded-lg hover:bg-first transition">
-                        <span class="material-icons">{{ item.icon }}</span>
+                        class="flex items-center gap-3 p-2 rounded-lg hover:bg-first hover:text-white text-gray-700 transition no-underline">
+                        <span class="material-symbols-outlined">
+                            {{ item.icon }}
+                        </span>
                         <span>{{ item.label }}</span>
                     </a>
                 </nav>
@@ -54,7 +61,7 @@
         </transition>
 
         <!-- Conteúdo principal -->
-        <div class="flex-1 bg-six text-white p-6 md:ml-64 overflow-y-auto">
+        <div class="flex-1 text-white p-6 md:ml-64 overflow-y-auto">
             <slot />
         </div>
     </div>
@@ -86,7 +93,7 @@ onUnmounted(() => {
 
 // Itens do menu
 const menuItems = [
-    { label: "Início", href: "/", icon: "home" },
+    { label: "Horários do dia", href: "/", icon: "nest_clock_farsight_analog" },
     { label: "Agenda", href: "/agenda", icon: "event" },
     { label: "Configurações", href: "/config", icon: "settings" },
 ];
