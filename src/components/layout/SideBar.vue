@@ -108,5 +108,6 @@ const menuItems = [
     { label: "Horários do dia", name: "home", icon: "nest_clock_farsight_analog" },
     { label: "Meus medicamentos", name: "myMedications", icon: "event" },
     { label: "Estatísticas", name: "estatistics", icon: "bar_chart" },
+    { label: "Novo medicamento", name: "addMedications", icon: "add" },
 ];
 </script>

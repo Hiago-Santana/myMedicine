@@ -3,7 +3,7 @@
     <side-bar v-if="route.meta.showSideBar"></side-bar>
     
     <!-- Conteúdo principal -->
-    <main class="flex-1 overflow-y-auto pt-16 px-6 pb-6 md:pt-6 md:px-6 md:ml-0">
+    <main class="flex-1 overflow-y-auto pt-16 px-4 pb-6 md:pt-6 md:px-6 md:ml-0">
       <router-view></router-view>
     </main>
   </div>
