@@ -3,7 +3,7 @@
         <div
             class="border border-gray-200 rounded-md shadow-md/20 p-2 pb-10 w-full dark:bg-fourth dark:border-gray-700">
 
-        
+
             <div class="flex justify-between my-2">
                 <h2 class="font-bold">Adicionar medicamento</h2>
                 <span class="material-symbols-outlined">
@@ -83,21 +83,30 @@
                 </div>
             </div>
             <div class="flex gap-4 my-2">
-                <button type="button"
+                <button @click="goBack(router)" type="button"
                     class="w-full text-center font-semibold border border-gray-300 hover:bg-gray-200 p-2 rounded-md dark:border-gray-700">
                     Cancelar
                 </button>
-                <button @click="sendToDB()" type="submit"
-                    class="w-full text-center font-semibold bg-first text-white hover:bg-first/85 p-2 rounded-md">
+                <button :disabled="disabled" type="submit" @click="insertNewMedication()" 
+                    class="w-full text-center font-semibold bg-first text-white hover:bg-first/85 p-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed">
                     Adicionar Medicamento
                 </button>
             </div>
         </div>
     </form>
+    <dialog-modal v-if="showConfirmationModal" :title="titleModal" :message="messageModal"
+        @close="showConfirmationModal = false, goBack(router)"></dialog-modal>
 </template>
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
+import { openDb, addMedication } from '../../composables/indexedDB/useIndexedDB';
+import { goTo, goBack } from '../../router/navigationUtils';
+import DialogModal from '../../components/modals/DialogModal.vue';
 
+const router = useRouter();
+
+const database = ref(null);
 const name = ref(null);
 const dosage = ref(null);
 const dosageUnit = ref('mg');
@@ -107,6 +116,40 @@ const time = ref(null);
 const frequencyValue = ref(1);
 const frequencyUnit = ref('dia');
 const notes = ref(null);
+const showConfirmationModal = ref(false);
+const titleModal = ref(null);
+const messageModal = ref(null);
+const disabled = computed(() => !isValidData());
+
+onMounted(async () => {
+    database.value = await openDb();
+});
+
+const insertNewMedication = async () => {
+    try {
+        if (!database.value) {
+            database.value = await openDb();
+        }
+        if (!isValidData()) throw new Error("Incomplete data");
+
+        const data = {
+            name: name.value,
+            dosage: dosage.value,
+            dosageUnit: dosageUnit.value,
+            quantity: quantity.value,
+            formType: formType.value,
+            time: time.value,
+            frequencyValue: frequencyValue.value,
+            frequencyUnit: frequencyUnit.value,
+            notes: notes.value
+        }
+
+        const result = await addMedication(database.value, data);
+        setDialogMessage(result.success);
+    } catch (error) {
+        console.error("error: ", error);
+    }
+}
 
 const isName = () => !!name.value?.trim();
 const isDosage = () => !!dosage.value;
@@ -118,28 +161,31 @@ const isFrequencyValue = () => !!frequencyValue.value;
 const isFrequencyUnit = () => !!frequencyUnit.value;
 
 const isValidData = () => {
-  const checks = [
-    isName(),
-    isDosage(),
-    isDosageUnit(),
-    isQuantity(),
-    isformType(),
-    isTime(),
-    isFrequencyValue(),
-    isFrequencyUnit()
-  ];
-  return checks.every(Boolean);
+    const checks = [
+        isName(),
+        isDosage(),
+        isDosageUnit(),
+        isQuantity(),
+        isformType(),
+        isTime(),
+        isFrequencyValue(),
+        isFrequencyUnit()
+    ];
+    return checks.every(Boolean);
 };
 
-const sendToDB = async () => {
-  if (!isValidData()) {
-    console.warn("Dados inválidos. Não enviado ao DB.");
-    return false;
-  }
-  console.log("Data is ok. Send to DB.");
-  // await fetch(...) ou lógica de envio aqui
-};
-
+const setDialogMessage = (result) => {
+    if (result) {
+        titleModal.value = 'Sucesso';
+        messageModal.value = 'Medicamento inserido com sucesso!';
+        showConfirmationModal.value = true;
+        goTo(router,'home')
+    } else {
+        titleModal.value = 'Erro';
+        messageModal.value = 'Erro ao inserir medicamento!';
+        showConfirmationModal.value = true;
+    };
+}
 
 
 
