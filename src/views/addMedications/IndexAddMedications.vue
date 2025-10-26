@@ -102,6 +102,7 @@ import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { openDb, addMedication } from '../../composables/indexedDB/useIndexedDB';
 import { goTo, goBack } from '../../router/navigationUtils';
+import { loadMedicationsLocalData } from '../../initializers/loadLocalData'
 import DialogModal from '../../components/modals/DialogModal.vue';
 
 const router = useRouter();
@@ -174,12 +175,12 @@ const isValidData = () => {
     return checks.every(Boolean);
 };
 
-const setDialogMessage = (result) => {
+const setDialogMessage = async (result) => {
     if (result) {
         titleModal.value = 'Sucesso';
         messageModal.value = 'Medicamento inserido com sucesso!';
         showConfirmationModal.value = true;
-        goTo(router,'home')
+        await loadMedicationsLocalData();
     } else {
         titleModal.value = 'Erro';
         messageModal.value = 'Erro ao inserir medicamento!';

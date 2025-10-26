@@ -35,7 +35,7 @@ export function addMedication(db, data) {
   });
 }
 
-export function listTransactions(db) {
+export function listMedications(db) {
   return new Promise((resolve, reject) => {
     const tx = db.transaction("medication", "readonly");
     const store = tx.objectStore("medication");
@@ -49,4 +49,4 @@ export function listTransactions(db) {
       reject(e.target.error);
     };
   });
-}
+} 
