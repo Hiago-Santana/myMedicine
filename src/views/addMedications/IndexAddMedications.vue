@@ -53,9 +53,13 @@
                     </div>
                 </div>
                 <div class="my-1">
-                    <label class="font-semibold">Horário da primeira dose</label>
-                    <input v-model="time" type="time" required
-                        class="w-full border border-gray-300 rounded-md p-1 capitalize dark:border-gray-700">
+                    <label class="font-semibold">Dia e horário da primeira dose</label>
+                    <div class="flex gap-2">
+                        <input v-model="date" type="date" required
+                            class="w-full border border-gray-300 rounded-md p-1 capitalize dark:border-gray-700">
+                        <input v-model="time" type="time" required
+                            class="w-full border border-gray-300 rounded-md p-1 capitalize dark:border-gray-700">
+                    </div>
                 </div>
                 <div class="my-1">
                     <label class="font-semibold">Frequência</label>
@@ -87,7 +91,7 @@
                     class="w-full text-center font-semibold border border-gray-300 hover:bg-gray-200 p-2 rounded-md dark:border-gray-700">
                     Cancelar
                 </button>
-                <button :disabled="disabled" type="submit" @click="insertNewMedication()" 
+                <button :disabled="disabled" type="submit" @click="insertNewMedication()"
                     class="w-full text-center font-semibold bg-first text-white hover:bg-first/85 p-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed">
                     Adicionar Medicamento
                 </button>
@@ -114,6 +118,7 @@ const dosageUnit = ref('mg');
 const quantity = ref(null);
 const formType = ref('cp');
 const time = ref(null);
+const date = ref(null);
 const frequencyValue = ref(1);
 const frequencyUnit = ref('dia');
 const notes = ref(null);
@@ -140,6 +145,7 @@ const insertNewMedication = async () => {
             quantity: quantity.value,
             formType: formType.value,
             time: time.value,
+            date: date.value,
             frequencyValue: frequencyValue.value,
             frequencyUnit: frequencyUnit.value,
             notes: notes.value
@@ -158,6 +164,7 @@ const isDosageUnit = () => !!dosageUnit.value;
 const isQuantity = () => !!quantity.value;
 const isformType = () => !!formType.value;
 const isTime = () => !!time.value;
+const isDate = () => !!date.value;
 const isFrequencyValue = () => !!frequencyValue.value;
 const isFrequencyUnit = () => !!frequencyUnit.value;
 
@@ -169,6 +176,7 @@ const isValidData = () => {
         isQuantity(),
         isformType(),
         isTime(),
+        isDate(),
         isFrequencyValue(),
         isFrequencyUnit()
     ];
