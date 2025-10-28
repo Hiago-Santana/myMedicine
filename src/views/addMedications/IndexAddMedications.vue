@@ -63,22 +63,40 @@
                 </div>
                 <div class="my-1">
                     <label class="font-semibold">Frequência</label>
-                    <div class="flex items-center gap-2 mb-2">
+                    <div class="flex flex-col gap-4">                     
 
-                        <input v-model="frequencyValue" type="number" required
-                            class="border border-gray-300 text-center rounded-md p-1 w-12 max-w-20 dark:border-gray-700">
+                        <div class="flex flex-col">
+                            <label class="text-md">Qual frequência?</label>
+                            <select v-model="frequencyUnit"
+                                class="w-full border border-gray-300 rounded-md p-1 dark:bg-fourth dark:border-gray-700">
+                                <option value="diaria">diaria</option>
+                                <option value="semanal">semanal</option>
+                                <option value="mensal">mensal</option>
+                            </select>
+                        </div>
 
-                        <span class="text-nowrap">vez por</span>
+                        <div v-if="frequencyUnit !== 'semanal'" class="flex flex-col gap-2 mb-2">
+                            <label>{{ frequencyUnit === 'diaria' ? 'Quantas vezes por dia?' : 'Quantas vezes por mês?' }}</label>
+                            <input v-model="frequencyValue" type="number" required
+                                class="border border-gray-300 rounded-md p-1 dark:border-gray-700">
+                        </div>
+                        <div v-else>
+                            <label>Dias da semana</label>
+                            <!-- <div v-for="days in dayOfWeek" :kay="days.day">
+                                {{ days.day }}
+                            </div> -->
+                            <div class="flex">
+                                <button 
+                                type="button" 
+                                @click="monday = !monday" 
+                                :class="monday ? dayFormatActived : dayFormaDesactived"
+                                class="font-semibold border rounded-md p-2">Seg</button>
+                            </div>
 
-                        <select v-model="frequencyUnit"
-                            class="w-full border border-gray-300 rounded-md p-1 dark:bg-fourth dark:border-gray-700">
-                            <option value="dia">dia</option>
-                            <option value="semana">semana</option>
-                            <option value="mes">mês</option>
-                        </select>
+                        </div>
 
                     </div>
-                    <span class="font-light text-md">Ex: 2 vezes por dia</span>
+
                 </div>
                 <div class="flex flex-col my-1">
                     <label class="font-semibold">Observações</label>
@@ -126,6 +144,24 @@ const showConfirmationModal = ref(false);
 const titleModal = ref(null);
 const messageModal = ref(null);
 const disabled = computed(() => !isValidData());
+const monday = ref(false);
+const tuesday = ref(false);
+const wednesday = ref(false);
+const thursday = ref(false);
+const fryday = ref(false);
+const saturday = ref(false);
+const sanday = ref(false);
+const dayFormatActived = ref('bg-first text-white');
+const dayFormaDesactived = ref('border border-gray-300')
+const dayOfWeek = ref(
+    { day: 'monday', active: false }, 
+    { day: 'tuesday', active: false }, 
+    { day: 'wednesday', active: false }, 
+    { day: 'thursday', active: false }, 
+    { day: 'fryday', active: false },
+    { day: 'saturday', active: false }, 
+    { day: 'sanday', active: false}
+);
 
 onMounted(async () => {
     database.value = await openDb();
