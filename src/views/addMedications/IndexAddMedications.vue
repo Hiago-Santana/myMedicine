@@ -63,11 +63,11 @@
                 </div>
                 <div class="my-1">
                     <label class="font-semibold">Frequência</label>
-                    <div class="flex flex-col gap-4">                     
+                    <div class="flex flex-col gap-4">
 
                         <div class="flex flex-col">
                             <label class="text-md">Qual frequência?</label>
-                            <select v-model="frequencyUnit"
+                            <select v-model="frequencyUnit" required
                                 class="w-full border border-gray-300 rounded-md p-1 dark:bg-fourth dark:border-gray-700">
                                 <option value="diaria">diaria</option>
                                 <option value="semanal">semanal</option>
@@ -76,23 +76,23 @@
                         </div>
 
                         <div v-if="frequencyUnit !== 'semanal'" class="flex flex-col gap-2 mb-2">
-                            <label>{{ frequencyUnit === 'diaria' ? 'Quantas vezes por dia?' : 'Quantas vezes por mês?' }}</label>
+                            <label>{{ frequencyUnit === 'diaria' ? 'Quantas vezes por dia?' : 'Quantas vezes por mês?'
+                                }}</label>
                             <input v-model="frequencyValue" type="number" required
                                 class="border border-gray-300 rounded-md p-1 dark:border-gray-700">
                         </div>
                         <div v-else>
                             <label>Dias da semana</label>
-                            <!-- <div v-for="days in dayOfWeek" :kay="days.day">
-                                {{ days.day }}
-                            </div> -->
-                            <div class="flex">
-                                <button 
-                                type="button" 
-                                @click="monday = !monday" 
-                                :class="monday ? dayFormatActived : dayFormaDesactived"
-                                class="font-semibold border rounded-md p-2">Seg</button>
+                            <div class="flex gap-2 justify-between">
+                                <div v-for="days in dayOfWeek" :key="days.day" class="flex-1">
+                                    <button type="button" @click="days.active = !days.active" :class="[
+                                        days.active ? dayFormatActived : dayFormaDesactived,
+                                        'w-full font-semibold border rounded-md p-2 text-center'
+                                    ]">
+                                        {{ days.day }}
+                                    </button>
+                                </div>
                             </div>
-
                         </div>
 
                     </div>
@@ -138,7 +138,7 @@ const formType = ref('cp');
 const time = ref(null);
 const date = ref(null);
 const frequencyValue = ref(1);
-const frequencyUnit = ref('dia');
+const frequencyUnit = ref('diaria');
 const notes = ref(null);
 const showConfirmationModal = ref(false);
 const titleModal = ref(null);
@@ -153,15 +153,15 @@ const saturday = ref(false);
 const sanday = ref(false);
 const dayFormatActived = ref('bg-first text-white');
 const dayFormaDesactived = ref('border border-gray-300')
-const dayOfWeek = ref(
-    { day: 'monday', active: false }, 
-    { day: 'tuesday', active: false }, 
-    { day: 'wednesday', active: false }, 
-    { day: 'thursday', active: false }, 
-    { day: 'fryday', active: false },
-    { day: 'saturday', active: false }, 
-    { day: 'sanday', active: false}
-);
+const dayOfWeek = ref([
+    { value: 1, day: 'seg', active: false },
+    { value: 2, day: 'ter', active: false },
+    { value: 3, day: 'qua', active: false },
+    { value: 4, day: 'qui', active: false },
+    { value: 5, day: 'sex', active: false },
+    { value: 6, day: 'sab', active: false },
+    { value: 7, day: 'dom', active: false }
+]);
 
 onMounted(async () => {
     database.value = await openDb();
@@ -203,6 +203,7 @@ const isTime = () => !!time.value;
 const isDate = () => !!date.value;
 const isFrequencyValue = () => !!frequencyValue.value;
 const isFrequencyUnit = () => !!frequencyUnit.value;
+const isDayOfWeek = () => frequencyUnit.value === 'semanal' ? dayOfWeek.value.some(item => item.active === true) : true;
 
 const isValidData = () => {
     const checks = [
@@ -214,7 +215,8 @@ const isValidData = () => {
         isTime(),
         isDate(),
         isFrequencyValue(),
-        isFrequencyUnit()
+        isFrequencyUnit(),
+        isDayOfWeek(),
     ];
     return checks.every(Boolean);
 };
