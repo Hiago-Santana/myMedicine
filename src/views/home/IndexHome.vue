@@ -23,12 +23,14 @@ import CardMedication from './components/CardMedication.vue';
 const store = useAppStore();
 
 const medication = computed(() => store.medicationsStore);
+const medicationFormated = ref();
 const todayMadication = ref();
 const uniqueTime = computed(() => {
     const time = medication.value.map(item => item.time)
     const unique = [...new Set(time)];
     return unique.sort((a, b) => a.localeCompare(b, 'pt-BR'));
 })
+
 
 
 

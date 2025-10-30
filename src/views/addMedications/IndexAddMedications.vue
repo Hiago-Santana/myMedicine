@@ -182,7 +182,8 @@ const insertNewMedication = async () => {
             frequencyValue: frequencyUnit.value === 'daily' ? frequencyValue.value : null,
             frequencyUnit: frequencyUnit.value,
             dayOfWeek: frequencyUnit.value === 'weekly' ? dayOfWeekSelected.value : null,
-            notes: notes.value
+            notes: notes.value,
+            status: 'active'
         }
 
         const result = await addMedication(database.value, data);

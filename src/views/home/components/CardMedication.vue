@@ -6,7 +6,19 @@
             <span class="bg-gray-600 rounded-full h-2 w-2"></span>
             <div>{{ medication?.quantity }} {{ medication?.formType }}</div>
             <span class="bg-gray-600 rounded-full h-2 w-2"></span>
-            <div>{{ medication?.frequencyValue }} por {{ medication?.frequencyUnit }}</div>
+            <div class="flex">
+                <div v-if="medication?.frequencyUnit === 'daily'">
+                    {{ medication?.frequencyValue }}x {{ formatMedication(medication?.frequencyUnit) }}
+                </div>
+                <div v-if="medication?.frequencyUnit === 'biweekly' || medication?.frequencyUnit === 'monthly'">
+                    {{ medication?.frequencyValue }} {{ formatMedication(medication?.frequencyUnit) }}
+                </div>
+
+            </div>
+        </div>
+        <div v-if="medication?.frequencyUnit === 'weekly'" class="flex gap-1">
+            <div>Dia:</div>
+            {{medication.dayOfWeek.map(day => translate(medication?.frequencyUnit, day)).join(', ')}}
         </div>
         <div class="mt-2">{{ medication?.notes }}</div>
         <button :disabled="disabled" @click="insertNewMedication()"
@@ -19,6 +31,21 @@
     </div>
 </template>
 <script setup>
+import { translate } from '../../../utils/translations';
 const props = defineProps(['medication']);
+
+
+
+
+const formatMedication = (type) => {
+    const format = {
+        daily: 'por dia',
+        biweekly: 'A cada 15 dias',
+        monthly: '1 vez por mês'
+    }
+
+    return format[type] ?? type
+}
+
 
 </script>
