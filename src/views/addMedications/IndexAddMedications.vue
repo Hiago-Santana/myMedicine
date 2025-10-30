@@ -30,7 +30,7 @@
                             <option value="ml">ml</option>
                             <option value="mcg">mcg</option>
                             <option value="UI">UI</option>
-                            <option value="gotas">gotas</option>
+                            <option value="gout">gotas</option>
                         </select>
                     </div>
                 </div>
@@ -44,11 +44,11 @@
                             class="w-full border border-gray-300 rounded-md p-1 dark:bg-fourth dark:border-gray-700">
                             <option value="cp">comprimido(s)</option>
                             <option value="cap">capsula(s)</option>
-                            <option value="gota">gota(s)</option>
+                            <option value="gout">gota(s)</option>
                             <option value="ml">ml</option>
-                            <option value="aplicacao">aplicação(ões)</option>
-                            <option value="inalacao">inalação(ões)</option>
-                            <option value="sache">sachê(s)</option>
+                            <option value="aplication">aplicação(ões)</option>
+                            <option value="inhalation">inalação(ões)</option>
+                            <option value="sachet">sachê(s)</option>
                         </select>
                     </div>
                 </div>
@@ -69,25 +69,25 @@
                             <label class="text-md">Qual frequência?</label>
                             <select v-model="frequencyUnit" required
                                 class="w-full border border-gray-300 rounded-md p-1 dark:bg-fourth dark:border-gray-700">
-                                <option value="diaria">diaria</option>
-                                <option value="semanal">semanal</option>
-                                <option value="mensal">mensal</option>
+                                <option value="daily">diaria</option>
+                                <option value="weekly">semanal</option>
+                                <option value="biweekly">quinzenal</option>
+                                <option value="monthly">mensal</option>
                             </select>
                         </div>
 
-                        <div v-if="frequencyUnit !== 'semanal'" class="flex flex-col gap-2 mb-2">
-                            <label>{{ frequencyUnit === 'diaria' ? 'Quantas vezes por dia?' : 'Quantas vezes por mês?'
-                                }}</label>
+                        <div v-if="frequencyUnit === 'daily'" class="flex flex-col gap-2 mb-2">
+                            <label>Quantas vezes por dia?</label>
                             <input v-model="frequencyValue" type="number" required
                                 class="border border-gray-300 rounded-md p-1 dark:border-gray-700">
                         </div>
-                        <div v-else>
+                        <div v-if="frequencyUnit === 'weekly'">
                             <label>Dias da semana</label>
                             <div class="flex gap-2 justify-between">
                                 <div v-for="days in dayOfWeek" :key="days.day" class="flex-1">
                                     <button type="button" @click="days.active = !days.active" :class="[
                                         days.active ? dayFormatActived : dayFormaDesactived,
-                                        'w-full font-semibold border rounded-md p-2 text-center'
+                                        'w-full font-semibold border rounded-md p-2 text-center hover:bg-second hover:text-white transition'
                                     ]">
                                         {{ days.day }}
                                     </button>
@@ -137,20 +137,13 @@ const quantity = ref(null);
 const formType = ref('cp');
 const time = ref(null);
 const date = ref(null);
-const frequencyValue = ref(1);
-const frequencyUnit = ref('diaria');
+const frequencyValue = ref(null);
+const frequencyUnit = ref('daily');
 const notes = ref(null);
 const showConfirmationModal = ref(false);
 const titleModal = ref(null);
 const messageModal = ref(null);
 const disabled = computed(() => !isValidData());
-const monday = ref(false);
-const tuesday = ref(false);
-const wednesday = ref(false);
-const thursday = ref(false);
-const fryday = ref(false);
-const saturday = ref(false);
-const sanday = ref(false);
 const dayFormatActived = ref('bg-first text-white');
 const dayFormaDesactived = ref('border border-gray-300')
 const dayOfWeek = ref([
@@ -162,6 +155,10 @@ const dayOfWeek = ref([
     { value: 6, day: 'sab', active: false },
     { value: 7, day: 'dom', active: false }
 ]);
+const dayOfWeekSelected = computed(() => {
+    const selected = dayOfWeek.value.filter(item => item.active === true);
+    return selected.map(item => item.value);
+});
 
 onMounted(async () => {
     database.value = await openDb();
@@ -182,8 +179,9 @@ const insertNewMedication = async () => {
             formType: formType.value,
             time: time.value,
             date: date.value,
-            frequencyValue: frequencyValue.value,
+            frequencyValue: frequencyUnit.value === 'daily' ? frequencyValue.value : null,
             frequencyUnit: frequencyUnit.value,
+            dayOfWeek: frequencyUnit.value === 'weekly' ? dayOfWeekSelected.value : null,
             notes: notes.value
         }
 
@@ -201,9 +199,9 @@ const isQuantity = () => !!quantity.value;
 const isformType = () => !!formType.value;
 const isTime = () => !!time.value;
 const isDate = () => !!date.value;
-const isFrequencyValue = () => !!frequencyValue.value;
+const isFrequencyValue = () => frequencyUnit.value === 'daily' ? !!(frequencyValue.value > 0) : true;
 const isFrequencyUnit = () => !!frequencyUnit.value;
-const isDayOfWeek = () => frequencyUnit.value === 'semanal' ? dayOfWeek.value.some(item => item.active === true) : true;
+const isDayOfWeek = () => frequencyUnit.value === 'weekly' ? dayOfWeek.value.some(item => item.active === true) : true;
 
 const isValidData = () => {
     const checks = [
