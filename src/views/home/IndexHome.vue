@@ -1,4 +1,5 @@
 <template>
+{{ biweekly }}
     <div v-for="uniqueTimes in uniqueTime" :key="uniqueTimes">
         <div class="flex justify-center items-center border rounded-full bg-first w-14 h-14 text-white font-semibold">
             {{ uniqueTimes }}
@@ -14,6 +15,7 @@
         Fim
     </div>
     <div v-else class="flex items-center justify-center w-full h-full font-semibold text-2xl">Sem medicação</div>
+    
 </template>
 <script setup>
 import { ref, computed } from 'vue';
@@ -23,13 +25,30 @@ import CardMedication from './components/CardMedication.vue';
 const store = useAppStore();
 
 const medication = computed(() => store.medicationsStore);
-const medicationFormated = ref();
-const todayMadication = ref();
+const daily = computed(() => medication.value.filter(item => item.frequencyUnit === 'daily'));
+const weekly = computed(() => medication.value.filter(item => item.frequencyUnit === 'weekly' && item.dayOfWeek.includes(dayOfWeek.value)));
+const biweekly = computed(() => medication.value.filter(item => {
+    const unit = item.frequencyUnit === 'biweekly'; 
+    const differenceMs = today.value - new Date(item.date);
+    const differenceDays = Math.floor(differenceMs / (1000 * 60 * 60 * 24)); // em dias
+    const checkInteger = Number.isInteger((differenceDays / 15));
+    console.log("checkInteger",checkInteger)
+
+}));
+// const dailyMadication = computed(() => {
+//     const daily = medication.value.filter(item => item.frequencyUnit === 'daily');
+//     const weekly = medication.value.filter(item => item.)
+//     return daily
+// });
 const uniqueTime = computed(() => {
     const time = medication.value.map(item => item.time)
     const unique = [...new Set(time)];
     return unique.sort((a, b) => a.localeCompare(b, 'pt-BR'));
 })
+const today = ref(new Date());
+const dayOfWeek = ref(today.value.getDay()) ;
+const formattedDate = ref(today.value.toISOString().split('T')[0]);
+
 
 
 

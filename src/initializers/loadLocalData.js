@@ -10,7 +10,6 @@ export async function loadMedicationsLocalData() {
         if (!medications) throw new Error("Error geting medications");
         const store = useAppStore();
         store.medicationsStore = medications;
-        console.log("store", store)
         success = true;
         return success;
 
