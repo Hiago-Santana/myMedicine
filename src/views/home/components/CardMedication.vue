@@ -21,7 +21,7 @@
             {{medication.dayOfWeek.map(day => translate(medication?.frequencyUnit, day)).join(', ')}}
         </div>
         <div class="mt-2">{{ medication?.notes }}</div>
-        <button :disabled="disabled" @click="insertNewMedication()"
+        <button :disabled="disabled" @click="emits('onClick', item)"
             class="flex gap-1 mt-6 justify-center w-full text-center font-semibold bg-first text-white hover:bg-first/85 p-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed">
             <span class="material-symbols-outlined">
                 check
@@ -33,6 +33,7 @@
 <script setup>
 import { translate } from '../../../utils/translations';
 const props = defineProps(['medication']);
+const emits = defineEmits(['onClick']);
 
 
 

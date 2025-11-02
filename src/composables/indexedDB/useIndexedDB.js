@@ -7,6 +7,9 @@ export function openDb() {
       if (!db.objectStoreNames.contains("medication")) {
         db.createObjectStore("medication", { keyPath: "id", autoIncrement: true });
       }
+      if (!db.objectStoreNames.contains("medicationLog")) {
+        db.createObjectStore("medicationLog", { keyPath: "id", autoIncrement: true });
+      }
     };
 
     request.onsuccess = (e) => {
@@ -49,4 +52,5 @@ export function listMedications(db) {
       reject(e.target.error);
     };
   });
-} 
+}
+
