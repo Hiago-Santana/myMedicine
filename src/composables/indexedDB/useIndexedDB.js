@@ -99,5 +99,50 @@ export function updateByIdMedication(db, table, idMedication, updatedData) {
 }
 
 
+export function getItemByIdMedication(db, table, idMedication) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(table, "readwrite");
+    const store = tx.objectStore(table);
+    const request = store.getAll();
+
+    request.onsuccess = (e) => {
+      const allItems = e.target.result;
+
+      // Filtra os registros que têm o mesmo idMedication
+      const itemsToUpdate = allItems.filter(item => item.idMedication === idMedication);
+
+      if (itemsToUpdate.length === 0) {
+        resolve({ updated: 0, message: "Nenhum registro encontrado com esse idMedication." });
+        return;
+      }
+
+      let updatedCount = 0;
+
+      itemsToUpdate.forEach(item => {
+        // Atualiza os campos com base em updatedData
+        const updatedItem = { ...item, ...updatedData };
+        const updateRequest = store.put(updatedItem);
+
+        updateRequest.onsuccess = () => {
+          updatedCount++;
+          // Quando todos forem atualizados, resolvemos a Promise
+          if (updatedCount === itemsToUpdate.length) {
+            resolve({ updated: updatedCount, message: "Registros atualizados com sucesso!" });
+          }
+        };
+
+        updateRequest.onerror = (err) => {
+          reject(err.target.error);
+        };
+      });
+    };
+
+    request.onerror = (err) => {
+      reject(err.target.error);
+    };
+  });
+}
+
+
 
 
