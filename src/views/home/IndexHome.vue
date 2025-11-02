@@ -1,57 +1,80 @@
 <template>
   <div v-for="uniqueTimes in uniqueTime" :key="uniqueTimes">
-    <div class="flex justify-center items-center border rounded-full bg-first w-14 h-14 text-white font-semibold">
+    <div class="flex justify-center items-center border border-first rounded-full bg-first w-14 h-14 text-white font-semibold ">
       {{ uniqueTimes }}
     </div>
 
     <div v-for="value in medicationByFrequency" :key="value" class="border-l pl-3 ml-7">
       <div v-if="value.time === uniqueTimes" class="py-4">
-        <card-medication :medication=value></card-medication>
+        <card-medication :medication=value :medicationLog="medicationLog" :today="formattedDate" @onClick="medicationTaken"></card-medication>
       </div>
     </div>
   </div>
   <div v-if="uniqueTime.length > 0"
-    class="flex justify-center items-center border rounded-full bg-first w-14 h-14 text-white font-semibold">
+    class="flex justify-center items-center border border-first rounded-full bg-first w-14 h-14 text-white font-semibold">
     Fim
   </div>
   <div v-else class="flex items-center justify-center w-full h-full font-semibold text-2xl">Sem medicação</div>
 
 </template>
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useAppStore } from '../../globalStore/store';
+import { openDb, addItem, updateByIdMedication } from '../../composables/indexedDB/useIndexedDB';
+import { loadMedicationsLocalData } from '../../initializers/loadLocalData';
 import CardMedication from './components/CardMedication.vue';
+
+onMounted(async () => {
+
+})
 
 const store = useAppStore();
 
 const medication = computed(() => store.medicationsStore);
+const medicationLog = computed(() => store.medicationLog);
 const today = ref(new Date());
 const dayOfWeek = ref(today.value.getDay());
 const formattedDate = ref(today.value.toISOString().split('T')[0]);
+const nameTableMedicationLog = ref('medicationLog');
+const database = ref(null);
 
 const medicationByFrequency = computed(() => {
   const result = [];
+
   medication.value.forEach(item => {
     switch (item.frequencyUnit) {
-      case 'daily':
-        result.push(...frequencyDaily(item));
-        break
+      case 'daily': {
+        const dailyItems = frequencyDaily(item).map(r => ({
+          ...r,
+          status: isTaken(r) // 🔹 verificação individual
+        }));
+        result.push(...dailyItems);
+        break;
+      }
 
-      case 'weekly':
-        if (item.dayOfWeek?.includes(dayOfWeek.value)) result.push(item);
-        break
+      case 'weekly': {
+        if (item.dayOfWeek?.includes(dayOfWeek.value))
+          result.push({ ...item, status: isTaken(item) });
+        break;
+      }
 
-      case 'biweekly':
-        if (isRightDay(item.date, 15)) result.push(item);
-        break
+      case 'biweekly': {
+        if (isRightDay(item.date, 15))
+          result.push({ ...item, status: isTaken(item) });
+        break;
+      }
 
-      case 'monthly':
-        if (isRightDay(item.date, 30)) result.push(item);
-        break
+      case 'monthly': {
+        if (isRightDay(item.date, 30))
+          result.push({ ...item, status: isTaken(item) });
+        break;
+      }
     }
   });
+
   return result;
 });
+
 
 const uniqueTime = computed(() => {
   const time = medicationByFrequency.value.map(item => item.time)
@@ -87,15 +110,27 @@ const frequencyDaily = (item) => {
   return result;
 };
 
-const madicationTaken = (item) => {
+const medicationTaken = async (item) => {
+  !database.value ? database.value = await openDb() : '';
   const { id, time } = item;
   const status = true;
-  const data = { id, data: formattedDate, time, status }
+  const data = { idMedication: id, date: formattedDate.value, time, status };
+
+  const result = await addItem(database.value, nameTableMedicationLog.value, data);
+  await loadMedicationsLocalData();
+  console.log("result", result)
   
 }
 
 
-
-
+const isTaken = (item) => {
+    const checkId = medicationLog.value.some(value =>
+        value.idMedication === item.id &&
+        value.date === formattedDate.value &&
+        value.time === item.time &&
+        value.status === true
+    );
+    return checkId
+}
 
 </script>

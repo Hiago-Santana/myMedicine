@@ -122,7 +122,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { openDb, addMedication } from '../../composables/indexedDB/useIndexedDB';
+import { openDb, addItem } from '../../composables/indexedDB/useIndexedDB';
 import { goTo, goBack } from '../../router/navigationUtils';
 import { loadMedicationsLocalData } from '../../initializers/loadLocalData'
 import DialogModal from '../../components/modals/DialogModal.vue';
@@ -144,6 +144,7 @@ const showConfirmationModal = ref(false);
 const titleModal = ref(null);
 const messageModal = ref(null);
 const disabled = computed(() => !isValidData());
+const nameTableToAdd = ref('medication')
 const dayFormatActived = ref('bg-first text-white');
 const dayFormaDesactived = ref('border border-gray-300')
 const dayOfWeek = ref([
@@ -186,7 +187,7 @@ const insertNewMedication = async () => {
             status: 'active'
         }
 
-        const result = await addMedication(database.value, data);
+        const result = await addItem(database.value, nameTableToAdd.value, data);
         setDialogMessage(result.success);
     } catch (error) {
         console.error("error: ", error);

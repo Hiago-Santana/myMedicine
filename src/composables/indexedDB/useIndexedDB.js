@@ -1,6 +1,6 @@
 export function openDb() {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open("myMedicineDB", 1);
+    const request = indexedDB.open("myMedicineDB", 2);
 
     request.onupgradeneeded = (e) => {
       const db = e.target.result;
@@ -22,10 +22,10 @@ export function openDb() {
   });
 }
 
-export function addMedication(db, data) {
+export function addItem(db, table, data) {
   return new Promise((resolve, reject) => {
-    const tx = db.transaction("medication", "readwrite");
-    const store = tx.objectStore("medication");
+    const tx = db.transaction(table, "readwrite");
+    const store = tx.objectStore(table);
     const request = store.add(data);
 
     request.onsuccess = (e) => {
@@ -38,10 +38,10 @@ export function addMedication(db, data) {
   });
 }
 
-export function listMedications(db) {
+export function listItem(db, table) {
   return new Promise((resolve, reject) => {
-    const tx = db.transaction("medication", "readonly");
-    const store = tx.objectStore("medication");
+    const tx = db.transaction(table, "readonly");
+    const store = tx.objectStore(table);
     const request = store.getAll();
 
     request.onsuccess = (e) => {
@@ -53,4 +53,51 @@ export function listMedications(db) {
     };
   });
 }
+
+export function updateByIdMedication(db, table, idMedication, updatedData) {
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(table, "readwrite");
+    const store = tx.objectStore(table);
+    const request = store.getAll();
+
+    request.onsuccess = (e) => {
+      const allItems = e.target.result;
+
+      // Filtra os registros que têm o mesmo idMedication
+      const itemsToUpdate = allItems.filter(item => item.idMedication === idMedication);
+
+      if (itemsToUpdate.length === 0) {
+        resolve({ updated: 0, message: "Nenhum registro encontrado com esse idMedication." });
+        return;
+      }
+
+      let updatedCount = 0;
+
+      itemsToUpdate.forEach(item => {
+        // Atualiza os campos com base em updatedData
+        const updatedItem = { ...item, ...updatedData };
+        const updateRequest = store.put(updatedItem);
+
+        updateRequest.onsuccess = () => {
+          updatedCount++;
+          // Quando todos forem atualizados, resolvemos a Promise
+          if (updatedCount === itemsToUpdate.length) {
+            resolve({ updated: updatedCount, message: "Registros atualizados com sucesso!" });
+          }
+        };
+
+        updateRequest.onerror = (err) => {
+          reject(err.target.error);
+        };
+      });
+    };
+
+    request.onerror = (err) => {
+      reject(err.target.error);
+    };
+  });
+}
+
+
+
 
