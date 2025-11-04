@@ -1,7 +1,9 @@
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap");
+
 @import "tailwindcss";
 @import "tailwindcss/preflight.css" layer(base);
 @import "tailwindcss/theme.css" layer(theme);
+
 
 @theme {
   --color-first: #4845A5;

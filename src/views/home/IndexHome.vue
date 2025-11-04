@@ -36,7 +36,9 @@ const medication = computed(() => store.medicationsStore);
 const medicationLog = computed(() => store.medicationLog);
 const today = ref(new Date());
 const dayOfWeek = ref(today.value.getDay());
-const formattedDate = ref(today.value.toISOString().split('T')[0]);
+const formattedDate = ref(
+  `${today.value.getFullYear()}-${String(today.value.getMonth() + 1).padStart(2, '0')}-${String(today.value.getDate()).padStart(2, '0')}`
+);
 const nameTableMedicationLog = ref('medicationLog');
 const database = ref(null);
 

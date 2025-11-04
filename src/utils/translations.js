@@ -8,6 +8,21 @@ export const translations = {
     6: "Sábado",
     7: "Domingo",
   },
+
+  formType: {
+    cp: 'comprimido',
+    cap: 'capsula',
+    gout: globalThis,
+    aplication: 'aplicação',
+    inhalation: 'inalação',
+    sachet: 'sachê'
+  },
+
+  frequencyUnit: {
+    daily: 'por dia',
+    biweekly: 'A cada 15 dias',
+    monthly: '1 vez por mês'
+  }
 };
 
 export function translate(category, key) {
