@@ -67,7 +67,7 @@ export function updateByIdMedication(db, table, idMedication, updatedData) {
       const itemsToUpdate = allItems.filter(item => item.idMedication === idMedication);
 
       if (itemsToUpdate.length === 0) {
-        resolve({ updated: 0, message: "Nenhum registro encontrado com esse idMedication." });
+        resolve({ updated: 0, message: "Not found." });
         return;
       }
 

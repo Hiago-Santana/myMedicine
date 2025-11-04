@@ -1,12 +1,14 @@
 <template>
   <div v-for="uniqueTimes in uniqueTime" :key="uniqueTimes">
-    <div class="flex justify-center items-center border border-first rounded-full bg-first w-14 h-14 text-white font-semibold ">
+    <div
+      class="flex justify-center items-center border border-first rounded-full bg-first w-14 h-14 text-white font-semibold ">
       {{ uniqueTimes }}
     </div>
 
     <div v-for="value in medicationByFrequency" :key="value" class="border-l pl-3 ml-7">
       <div v-if="value.time === uniqueTimes" class="py-4">
-        <card-medication :medication=value :medicationLog="medicationLog" :today="formattedDate" @onClick="medicationTaken"></card-medication>
+        <card-medication :medication=value :medicationLog="medicationLog" :today="formattedDate"
+          @onClick="medicationTaken"></card-medication>
       </div>
     </div>
   </div>
@@ -44,33 +46,40 @@ const medicationByFrequency = computed(() => {
   medication.value.forEach(item => {
     switch (item.frequencyUnit) {
       case 'daily': {
-        const dailyItems = frequencyDaily(item).map(r => ({
-          ...r,
-          status: isTaken(r) // 🔹 verificação individual
-        }));
+        const dailyItems = frequencyDaily(item).map(r => {
+          const response = getMedicationLogStatus(r);
+          return { ...r, ...response }; // junta o item e o resultado do log
+        });
         result.push(...dailyItems);
         break;
       }
 
       case 'weekly': {
-        if (item.dayOfWeek?.includes(dayOfWeek.value))
-          result.push({ ...item, status: isTaken(item) });
+        if (item.dayOfWeek?.includes(dayOfWeek.value)) {
+          const response = getMedicationLogStatus(item);
+          result.push({ ...item, ...response });
+        }
         break;
       }
 
       case 'biweekly': {
-        if (isRightDay(item.date, 15))
-          result.push({ ...item, status: isTaken(item) });
+        if (isRightDay(item.date, 15)) {
+          const response = getMedicationLogStatus(item);
+          result.push({ ...item, ...response });
+        }
         break;
       }
 
       case 'monthly': {
-        if (isRightDay(item.date, 30))
-          result.push({ ...item, status: isTaken(item) });
+        if (isRightDay(item.date, 30)) {
+          const response = getMedicationLogStatus(item);
+          result.push({ ...item, ...response });
+        }
         break;
       }
     }
   });
+
 
   return result;
 });
@@ -112,25 +121,44 @@ const frequencyDaily = (item) => {
 
 const medicationTaken = async (item) => {
   !database.value ? database.value = await openDb() : '';
-  const { id, time } = item;
-  const status = true;
-  const data = { idMedication: id, date: formattedDate.value, time, status };
+  let result;
+  const { id, time, exists, status } = item;
 
-  const result = await addItem(database.value, nameTableMedicationLog.value, data);
+
+  if (exists) {
+    const data = { date: formattedDate.value, time, status: !status };
+    result = await updateByIdMedication(database.value, nameTableMedicationLog.value, id, data);
+  } else {
+    const data = { idMedication: id, date: formattedDate.value, time, status: true };
+    result = await addItem(database.value, nameTableMedicationLog.value, data);
+  }
   await loadMedicationsLocalData();
   console.log("result", result)
-  
+
+
+}
+
+const getMedicationLogStatus = (item) => {
+  const check = medicationLog.value.find(value =>
+    value.idMedication === item.id &&
+    value.date === formattedDate.value &&
+    value.time === item.time
+  );
+
+  if (!check) return { exists: false, status: false }
+
+  return { exists: true, status: check.status }
 }
 
 
-const isTaken = (item) => {
-    const checkId = medicationLog.value.some(value =>
-        value.idMedication === item.id &&
-        value.date === formattedDate.value &&
-        value.time === item.time &&
-        value.status === true
-    );
-    return checkId
-}
+// const isTaken = (item) => {
+//     const checkId = medicationLog.value.some(value =>
+//         value.idMedication === item.id &&
+//         value.date === formattedDate.value &&
+//         value.time === item.time &&
+//         value.status === true
+//     );
+//     return checkId
+// }
 
 </script>
