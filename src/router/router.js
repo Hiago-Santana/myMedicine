@@ -3,6 +3,7 @@ import IndexHome from "../views/home/IndexHome.vue";
 import IndexMyMedications from "../views/myMedications/IndexMyMedications.vue";
 import IndexStatistics from "../views/statistics/IndexStatistics.vue";
 import IndexAddMedications from "../views/addMedications/IndexAddMedications.vue";
+import IndexEditMedication from "../views/editMedication/IndexEditMedication.vue";
 
 const routes = [
   {
@@ -23,10 +24,16 @@ const routes = [
     component: IndexStatistics,
     meta: { showHeader: true, showSideBar: true },
   },
-    {
+  {
     path: "/adicionarmedicamentos",
     name: "addMedications",
     component: IndexAddMedications,
+    meta: { showHeader: true, showSideBar: true },
+  },
+  {
+    path: "/editarmedicamento/:id?",
+    name: "editMedication",
+    component: IndexEditMedication,
     meta: { showHeader: true, showSideBar: true },
   },
 ];

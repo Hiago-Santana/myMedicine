@@ -1,8 +1,17 @@
 <template>
     <div class="flex flex-col gap-3">
-        <div v-for="value in medication" :key="value.id" class="bg-white border border-gray-300 rounded-md p-2 shadow ">
-            <h2 class="font-semibold my-2">{{ value.name }}</h2>
-            <div class="flex flex-col gap-1">
+        <div v-for="value in medication" :key="value.id" class="bg-white border border-gray-300 rounded-md p-2 shadow dark:bg-fourth dark:border-gray-800">
+            <div class="flex justify-between">
+                <h2 class="font-semibold my-2">{{ value.name }}</h2>
+                <primary-button @click="goTo(router, 'editMedication', { id: value.id})" label="Editar" color="quaternary">
+                    <template #icon>
+                        <span class="material-symbols-outlined">
+                            edit_square
+                        </span>
+                    </template>
+                </primary-button>
+            </div>
+            <div class="flex flex-col gap-1 dark:text-gray-200">
                 <div class="flex gap-1">
                     <label class="font-medium">Dosangem:</label>
                     <div class="flex gap-1 items-center">
@@ -30,8 +39,8 @@
                     </div>
                 </div>
                 <div v-if="value.notes">
-                        <label class="font-medium mr-1">Observações:</label>
-                        <span>{{ value.notes }}</span>
+                    <label class="font-medium mr-1">Observações:</label>
+                    <span>{{ value.notes }}</span>
                 </div>
             </div>
         </div>
@@ -40,9 +49,13 @@
 </template>
 <script setup>
 import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import { useAppStore } from '../../globalStore/store';
 import { translate } from '../../utils/translations';
+import { goTo } from '../../router/navigationUtils';
+import PrimaryButton from '../../components/ui/buttons/PrimaryButton.vue';
 
+const router = useRouter();
 const store = useAppStore();
 
 const medication = computed(() => store.medicationsStore);
