@@ -10,7 +10,7 @@
       >
         <span class="material-symbols-outlined">menu</span>
       </button>
-      <h1 class="text-xl text-white">{{ title }}</h1>
+      <h1 class="text-xl text-white">{{ routeName === 'editMedication' ? 'Editar medicamento' : title }}</h1>
     </div>
 
     <!-- Overlay escuro (mobile) -->

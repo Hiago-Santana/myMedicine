@@ -1,9 +1,12 @@
 <template>
+
     <div class="flex flex-col gap-3">
-        <div v-for="value in medication" :key="value.id" class="bg-white border border-gray-300 rounded-md p-2 shadow dark:bg-fourth dark:border-gray-800">
+        <div v-for="value in medication" :key="value.id"
+            class="bg-white border border-gray-300 rounded-md p-2 shadow dark:bg-fourth dark:border-gray-800">
             <div class="flex justify-between">
                 <h2 class="font-semibold my-2">{{ value.name }}</h2>
-                <primary-button @click="goTo(router, 'editMedication', { id: value.id})" label="Editar" color="quaternary">
+                <primary-button @click="goTo(router, 'editMedication', { id: value.id })" label="Editar"
+                    color="quaternary">
                     <template #icon>
                         <span class="material-symbols-outlined">
                             edit_square
@@ -45,6 +48,9 @@
             </div>
         </div>
     </div>
+    <div v-if="medication.length === 0" class="flex items-center justify-center w-full h-full font-semibold text-2xl">Sem
+        medicação</div>
+
 
 </template>
 <script setup>

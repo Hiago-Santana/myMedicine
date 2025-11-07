@@ -1,14 +1,12 @@
 <template>
-    <h1>Editar Medicamento</h1>
     <div v-if="isMedication">
-
         <form @submit.prevent class="mt-4">
             <div
                 class="border border-gray-200 rounded-md shadow-md/20 p-2 pb-10 w-full dark:bg-fourth dark:border-gray-700">
 
 
                 <div class="flex justify-between my-2">
-                    <h2 class="font-bold">Adicionar medicamento</h2>
+                    <h2 class="font-bold">Editar medicamento</h2>
                     <span class="material-symbols-outlined">
                         close
                     </span>
@@ -108,17 +106,28 @@
                     </div>
                 </div>
                 <div class="flex gap-4 my-2">
+                    <button @click="showConfirmationModal = true" type="button"
+                        class="flex justify-center items-center gap-1 w-full text-center font-semibold border border-red-300 bg-red-700 text-white hover:bg-red-800 p-2 rounded-md dark:border-gray-700">
+                        <span class="material-symbols-outlined">
+                            delete
+                        </span>
+                        <span>Excluir</span>
+                    </button>
                     <button @click="goBack(router)" type="button"
                         class="w-full text-center font-semibold border border-gray-300 hover:bg-gray-200 p-2 rounded-md dark:border-gray-700">
                         Cancelar
                     </button>
-                    <button :disabled="disabled" type="submit" @click="insertNewMedication()"
+                    <button :disabled="disabled" type="submit" @click="updadateMedication()"
                         class="w-full text-center font-semibold bg-first text-white hover:bg-first/85 p-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed">
-                        Adicionar Medicamento
+                        Alterar
                     </button>
                 </div>
             </div>
         </form>
+        <dialog-modal v-if="showDialogModal" :title="titleModal" :message="messageModal"
+            @close="showDialogModal = false, goBack(router)"></dialog-modal>
+        <confirmation-modal v-if="showConfirmationModal" :title="titleConfirmationModal"
+            :message="messageConfirmationModal" @response="responseConfirmationModal"></confirmation-modal>
 
     </div>
 
@@ -126,8 +135,11 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { goTo } from '../../router/navigationUtils';
-import { openDb, getMedicationById } from '../../composables/indexedDB/useIndexedDB';
+import { goTo, goBack } from '../../router/navigationUtils';
+import { openDb, getMedicationById, updateByIdMedication, updateStatusByIdMedication } from '../../composables/indexedDB/useIndexedDB';
+import { loadMedicationsLocalData } from '../../initializers/loadLocalData';
+import DialogModal from '../../components/modals/DialogModal.vue';
+import ConfirmationModal from '../../components/modals/ConfirmationModal.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -135,22 +147,18 @@ const id = computed(() => route.params.id * 1);
 const medication = ref();
 const database = ref();
 const isMedication = ref(false);
-
-const name = ref(null);
-const dosage = ref(null);
 const dosageUnit = ref('mg');
-const quantity = ref(null);
 const formType = ref('cp');
-const time = ref(null);
-const date = ref(null);
-const frequencyValue = ref(null);
 const frequencyUnit = ref('daily');
 const notes = ref(null);
+const showDialogModal = ref(false);
 const showConfirmationModal = ref(false);
 const titleModal = ref(null);
 const messageModal = ref(null);
+const titleConfirmationModal = ref('Atenção');
+const messageConfirmationModal = ref('Deseja excluir esse medicamento?');
 const disabled = computed(() => !isValidData());
-const nameTableToAdd = ref('medication')
+const nameTableToUpdate = ref('medication')
 const dayFormatActived = ref('bg-first text-white');
 const dayFormaDesactived = ref('border border-gray-300')
 const dayOfWeek = ref([
@@ -185,7 +193,7 @@ const init = async () => {
     }
 }
 
-const insertNewMedication = async () => {
+const updadateMedication = async () => {
     try {
         if (!database.value) {
             database.value = await openDb();
@@ -193,6 +201,7 @@ const insertNewMedication = async () => {
         if (!isValidData()) throw new Error("Incomplete data");
 
         const data = {
+            id: id.value,
             name: medication.value.name,
             dosage: medication.value.dosage,
             dosageUnit: medication.value.dosageUnit,
@@ -200,20 +209,36 @@ const insertNewMedication = async () => {
             formType: medication.value.formType,
             time: medication.value.time,
             date: medication.value.date,
-            frequencyValue: medication.value.frequencyUnit === 'daily' ? medication.value.frequencyValue.value : null,
+            frequencyValue: medication.value.frequencyUnit === 'daily' ? medication.value.frequencyValue : null,
             frequencyUnit: frequencyUnit.value,
             dayOfWeek: frequencyUnit.value === 'weekly' ? dayOfWeekSelected.value : null,
             notes: notes.value,
             status: 'active'
         }
 
-        const result = await addItem(database.value, nameTableToAdd.value, data);
-        setDialogMessage(result.success);
+        const result = await updateByIdMedication(database.value, nameTableToUpdate.value, data.id, data);
+        setEditDialogModal(result.updated);
     } catch (error) {
         console.error("error: ", error);
+        setEditDialogModal(0);
+    }
+};
+
+const disabledMedication = async () => {
+    try {
+        if (!id.value) goTo(router, 'myMedications');
+        if (!database.value) {
+            database.value = await openDb();
+        }
+        const respose = await updateStatusByIdMedication(database.value, nameTableToUpdate.value, id.value, 'disabled')
+        setDisabledDialogModal(respose.updated)
+    } catch (error) {
+        console.error("error: ", error);
+        setDisabledDialogModal(0);
     }
 }
 
+const isId = () => !!id.value;
 const isName = () => !!medication.value.name?.trim();
 const isDosage = () => !!medication.value.dosage;
 const isDosageUnit = () => !!medication.value.dosageUnit;
@@ -227,6 +252,7 @@ const isDayOfWeek = () => medication.value.frequencyUnit === 'weekly' ? medicati
 
 const isValidData = () => {
     const checks = [
+        isId(),
         isName(),
         isDosage(),
         isDosageUnit(),
@@ -241,16 +267,38 @@ const isValidData = () => {
     return checks.every(Boolean);
 };
 
-const setDialogMessage = async (result) => {
-    if (result) {
+const setEditDialogModal = async (result) => {
+    if (result > 0) {
         titleModal.value = 'Sucesso';
-        messageModal.value = 'Medicamento inserido com sucesso!';
-        showConfirmationModal.value = true;
+        messageModal.value = 'Medicamento editado com sucesso!';
+        showDialogModal.value = true;
         await loadMedicationsLocalData();
     } else {
         titleModal.value = 'Erro';
-        messageModal.value = 'Erro ao inserir medicamento!';
-        showConfirmationModal.value = true;
+        messageModal.value = 'Erro ao editar medicamento!';
+        showDialogModal.value = true;
     };
+}
+
+const setDisabledDialogModal = async (result) => {
+    if (result > 0) {
+        titleModal.value = 'Sucesso';
+        messageModal.value = 'Medicamento excluido com sucesso!';
+        showDialogModal.value = true;
+        await loadMedicationsLocalData();
+    } else {
+        titleModal.value = 'Erro';
+        messageModal.value = 'Erro ao excluir medicamento!';
+        showDialogModal.value = true;
+    };
+}
+
+const responseConfirmationModal = async (response) => {
+    if (response) {
+        showConfirmationModal.value = false;
+        await disabledMedication();
+    } else {
+        showConfirmationModal.value = false;
+    }
 }
 </script>

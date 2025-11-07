@@ -22,7 +22,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useAppStore } from '../../globalStore/store';
-import { openDb, addItem, updateByIdMedication } from '../../composables/indexedDB/useIndexedDB';
+import { openDb, addItem, updateByIdMedication, updateByIdMedicationLog } from '../../composables/indexedDB/useIndexedDB';
 import { loadMedicationsLocalData } from '../../initializers/loadLocalData';
 import CardMedication from './components/CardMedication.vue';
 
@@ -124,12 +124,13 @@ const frequencyDaily = (item) => {
 const medicationTaken = async (item) => {
   !database.value ? database.value = await openDb() : '';
   let result;
-  const { id, time, exists, status } = item;
+  const { id, time, exists } = item;
 
 
   if (exists) {
-    const data = { date: formattedDate.value, time, status: !status };
-    result = await updateByIdMedication(database.value, nameTableMedicationLog.value, id, data);
+    const status = !item.status
+    const data = { date: formattedDate.value, time, status: status };
+    result = await updateByIdMedicationLog(database.value, nameTableMedicationLog.value, id, data);
   } else {
     const data = { idMedication: id, date: formattedDate.value, time, status: true };
     result = await addItem(database.value, nameTableMedicationLog.value, data);
