@@ -214,16 +214,16 @@ const insertNewMedication = async () => {
     }
 }
 
-const isName = () => !!name.value?.trim();
-const isDosage = () => !!dosage.value;
-const isDosageUnit = () => !!dosageUnit.value;
-const isQuantity = () => !!quantity.value;
-const isformType = () => !!formType.value;
-const isTime = () => !!time.value;
-const isDate = () => !!date.value;
-const isFrequencyValue = () => frequencyUnit.value === 'daily' ? !!(frequencyValue.value > 0) : true;
-const isFrequencyUnit = () => !!frequencyUnit.value;
-const isDayOfWeek = () => frequencyUnit.value === 'weekly' ? dayOfWeek.value.some(item => item.active === true) : true;
+const isName = () => !!medication.value.name?.trim();
+const isDosage = () => !!medication.value.dosage;
+const isDosageUnit = () => !!medication.value.dosageUnit;
+const isQuantity = () => !!medication.value.quantity;
+const isformType = () => !!medication.value.formType;
+const isTime = () => !!medication.value.time;
+const isDate = () => !!medication.value.date;
+const isFrequencyValue = () => medication.value.frequencyUnit === 'daily' ? !!(medication.value.frequencyValue > 0) : true;
+const isFrequencyUnit = () => !!medication.value.frequencyUnit;
+const isDayOfWeek = () => medication.value.frequencyUnit === 'weekly' ? medication.value.dayOfWeek.some(item => item.active === true) : true;
 
 const isValidData = () => {
     const checks = [
