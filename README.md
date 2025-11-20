@@ -17,9 +17,10 @@ Requisitos para executar localmente
 Node.js (versão recomendada: 18+)
 
 npm ou yarn
-▶️ Como rodar o projeto
 
+▶️ Como rodar o projeto
 # Clonar o repositório
+
 git clone <URL-do-seu-repositório>
 
 # Entrar no diretório
@@ -32,7 +33,7 @@ npm install
 npm run dev
 
 
-# Funcionalidades
+Funcionalidades
 
 Ao entrar na tela principal da aplicação, é possível ver os campos "Horários do dia", "Meus medicamentos" e "Novo medicamento".
  - Horários do dia: Neste campo, é possível ver os horários agendados para determinadas medicações predefinidas e devidamente preenchidas
@@ -40,7 +41,7 @@ Ao entrar na tela principal da aplicação, é possível ver os campos "Horário
  - Meus medicamentos: Aqui são listados todos os medicamentos administrados, no geral. Temos informações de dosagem, dia específico, horário, etc.
  - Novo medicamento: A área é responsável por adicionar uma nova receita ao calendário, com uma medicação que será preenchida pelo usuário.
 
-# Como contribuir
+Como contribuir
 
 Clone o projeto com git clone /mnt/data/README.md
 
