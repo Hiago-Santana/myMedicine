@@ -72,5 +72,5 @@ git push origin minha-contribuicao
 
 # Integrantes 
 
-Alexandre dos Santos Camaragibe
+Alexandre dos Santos Camaragibe , 
 Karina Silva de Souza
