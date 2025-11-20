@@ -12,7 +12,25 @@ a atuação. Organize suas medicações ao longo dos dias, semanas, meses e anos
 
 # Como rodar
 
-Para rodar a aplicação,
+Requisitos para executar localmente
+
+Node.js (versão recomendada: 18+)
+
+npm ou yarn
+▶️ Como rodar o projeto
+
+# Clonar o repositório
+git clone <URL-do-seu-repositório>
+
+# Entrar no diretório
+cd my-medicine
+
+# Instalar dependências
+npm install
+
+# Rodar o app
+npm run dev
+
 
 # Funcionalidades
 
@@ -24,8 +42,32 @@ Ao entrar na tela principal da aplicação, é possível ver os campos "Horário
 
 # Como contribuir
 
-Clone o projeto com
+Clone o projeto com git clone /mnt/data/README.md
+
+01 - Acesse o diretório do projeto:
+
+cd my-medicine
+
+
+02- Crie uma nova branch para sua contribuição:
+
+git checkout -b minha-contribuicao
+
+
+03- Faça suas alterações e commit:
+
+git add .
+git commit -m "Descrição das alterações"
+
+
+04- Envie sua branch:
+
+git push origin minha-contribuicao
+
+
+05- Abra um Pull Request no GitHub, descrevendo claramente o que foi alterado ou adicionado.
 
 # Integrantes 
 
 Alexandre dos Santos Camaragibe
+Karina Silva de Souza
