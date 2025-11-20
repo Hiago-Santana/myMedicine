@@ -24,9 +24,11 @@ npm ou yarn
 git clone <URL-do-seu-repositório>
 
 # Entrar no diretório
+
 cd my-medicine
 
 # Instalar dependências
+
 npm install
 
 # Rodar o app
