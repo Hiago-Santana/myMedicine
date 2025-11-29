@@ -1,6 +1,6 @@
 export function openDb() {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open("myMedicineDB", 1);
+    const request = indexedDB.open("myMedicineDB", 2);
 
     request.onupgradeneeded = (e) => {
       const db = e.target.result;
