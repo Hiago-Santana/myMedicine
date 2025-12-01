@@ -4,6 +4,12 @@ O projeto visa prover ao usuário uma maneira simples e rápida de organizar seu
 receitadas por um médico. Este aplicativo não visa substituir o trabalho de um profissional, mas sim auxiliar e complementar
 a atuação. Organize suas medicações ao longo dos dias, semanas, meses e anos, e não se esqueça mais de administrá-los.
 
+# 📱 Download do APK
+
+Para instalar e testar o aplicativo no Android, acesse o APK disponível no Google Drive:
+
+👉 **[Clique aqui para acessar a pasta pública com o arquivo APK]([https://drive.google.com/drive/folders/1JGZy9J2rWbRxBZzSykqTycZ_PN7aW2ct](https://drive.google.com/drive/folders/1JGZy9J2rWbRxBZzSykqTycZ_PN7aW2ct?usp=drive_link))**
+
 # Tecnologias utilizadas
 
 - *Vite*: `v7.1.7`
