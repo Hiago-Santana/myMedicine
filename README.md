@@ -8,7 +8,7 @@ a atuação. Organize suas medicações ao longo dos dias, semanas, meses e anos
 
 Para instalar e testar o aplicativo no Android, acesse o APK disponível no Google Drive:
 
-👉 **[Clique aqui para acessar a pasta pública com o arquivo APK]([https://drive.google.com/drive/folders/1JGZy9J2rWbRxBZzSykqTycZ_PN7aW2ct](https://drive.google.com/drive/folders/1JGZy9J2rWbRxBZzSykqTycZ_PN7aW2ct?usp=drive_link))**
+👉 **[Clique aqui para acessar a pasta pública com o arquivo APK](https://drive.google.com/drive/folders/1JGZy9J2rWbRxBZzSykqTycZ_PN7aW2ct)**
 
 # Tecnologias utilizadas
 
